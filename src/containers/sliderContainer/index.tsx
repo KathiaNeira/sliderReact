@@ -66,7 +66,6 @@ export class ContainerSlider extends React.Component<Props, {}> {
     }
     
     slideInfinite = () => {
-        console.log('sdsdsd', this.widthSlider);
         let slider = document.getElementById('slider');
         if (this.widthSlider === this.totalSlide-1) {
             //ifinito para delante
@@ -139,7 +138,8 @@ export class ContainerSlider extends React.Component<Props, {}> {
         this.widthSlider = parseInt(e.target.getAttribute('data-key'));
         let slider = document.getElementById('slider');
         this.newDeltaX = (slider.offsetWidth)*this.widthSlider;
-        slider.style.transform = `translateX(-${this.newDeltaX}px)`;        
+        slider.style.transform = `translateX(-${this.newDeltaX}px)`;
+        slider.style.transition = 'all ease .5s';       
     }
 
     prevSlide = () => {
@@ -161,6 +161,7 @@ export class ContainerSlider extends React.Component<Props, {}> {
                 this.widthSlider= 0;
             }
         }
+        slider.style.transition = 'all ease .5s';
     }
 
     nextSlide = () => {
@@ -182,6 +183,7 @@ export class ContainerSlider extends React.Component<Props, {}> {
                 this.widthSlider= this.totalSlide-1;
             }
         }
+        slider.style.transition = 'all ease .5s';
     }
 
     componentDidMount() {
