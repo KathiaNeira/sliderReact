@@ -10,12 +10,9 @@ const Wrapper = styled.section`
 
 export const App = () => (
   <Wrapper>
-    <ContainerSlider dots={true} prevAndNext={true} infinite={false}>
-      <Slider 
-        handleRef={ref => {
-          this.reference = ref;
-          console.log("ref====", ref);
-        }}/>
+    <ContainerSlider dots={true} prevAndNext={true} infinite={true}>
+      <Slider />
     </ContainerSlider>
+
   </Wrapper>
 );

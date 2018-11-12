@@ -1,7 +1,8 @@
 import * as React from "react";
 import * as ReactDOM from 'react-dom';
 import * as Swipeable from "react-swipeable";
-import { Dots, Buttons } from './styled'
+import { Wrapper, Dots, Buttons } from './styled'
+import { Slider } from "../../components/Slider";
 
 interface Props {
     children?:any;
@@ -11,29 +12,28 @@ interface Props {
 }
 
 export class ContainerSlider extends React.Component<Props, {}> {
-    reference?: any;
     newDeltaX = null;
     position: any;
     widthSlider= 0;
     totalSlide: any;
+    slider = null;
+
     constructor(props) {
         super(props);
-        this.reference = React.createRef();
     }
 
-    swiping = (e, deltaX, deltaY, absX, absY, velocity) => {
-        let slider = document.getElementById('slider');
-        slider.style.transition = 'none';
+    swiping = (e, deltaX, absX) => {
+        this.slider.style.transition = 'none';
         if (this.newDeltaX !== null) {
             console.log('ya se movió', this.newDeltaX + deltaX);
-            slider.style.transform = `translateX(-${this.newDeltaX+deltaX}px)`;
+            this.slider.style.transform = `translateX(-${this.newDeltaX+deltaX}px)`;
         } else {
             console.log('es el primer movimiento', e);
             if (this.swipingLeft(e, absX, deltaX)) {
                 let value = -deltaX
-                slider.style.transform = `translateX(${value}px)`;
+                this.slider.style.transform = `translateX(${value}px)`;
             } else if (this.swipingRight(e, absX, deltaX)) {
-                slider.style.transform = `translateX(${deltaX}px)`;
+                this.slider.style.transform = `translateX(${deltaX}px)`;
             }
         }
     }
@@ -50,36 +50,34 @@ export class ContainerSlider extends React.Component<Props, {}> {
 
     swiped = (e, deltaX, deltaY, isFlick, velocity) => {
         console.log('totalSlide', this.totalSlide);
-        let slider = document.getElementById('slider');
         this.VerifyNextOrPrev();
         this.isSelectedDot();
-        let width = (slider.offsetWidth)*this.widthSlider;
+        let width = (this.slider.offsetWidth)*this.widthSlider;
         let medida = width - deltaX;
         this.newDeltaX = deltaX+medida;
 
         if (this.props.infinite) {
             this.slideInfinite();
         } else {
-            slider.style.transform = `translateX(-${this.newDeltaX}px)`;
-            slider.style.transition = 'all ease .5s';
+            this.slider.style.transform = `translateX(-${this.newDeltaX}px)`;
+            this.slider.style.transition = 'all ease .5s';
         }
     }
     
     slideInfinite = () => {
-        let slider = document.getElementById('slider');
         if (this.widthSlider === this.totalSlide-1) {
             //ifinito para delante
             this.addInfiniteEffect(0);
-            slider.style.transform = `translateX(-${this.newDeltaX}px)`;
-            slider.style.transition = 'all ease .5s';
+            this.slider.style.transform = `translateX(-${this.newDeltaX}px)`;
+            this.slider.style.transition = 'all ease .5s';
         } else if (this.widthSlider === -1) {
             //infinito para atrás
             this.newDeltaX = this.newDeltaX*(-1);
-            slider.style.transform = `translateX(${this.newDeltaX}px)`;
+            this.slider.style.transform = `translateX(${this.newDeltaX}px)`;
         } else {
             //normal
-            slider.style.transform = `translateX(-${this.newDeltaX}px)`;
-            slider.style.transition = 'all ease .5s';
+            this.slider.style.transform = `translateX(-${this.newDeltaX}px)`;
+            this.slider.style.transition = 'all ease .5s';
         }
         //agregando slide antes del inicio
         this.infinitePrev();
@@ -88,40 +86,60 @@ export class ContainerSlider extends React.Component<Props, {}> {
     }
     
     infinitePrev = () => {
-        let slider = document.getElementById('slider');
         if (this.widthSlider === this.totalSlide ) {
             setTimeout(() => {
-                slider.removeAttribute('style');
+                this.slider.removeAttribute('style');
                 this.widthSlider = 0;
                 this.newDeltaX= null;
-                let element:any = slider.childNodes[4];
-                slider.removeChild(element);
+                let element:any = this.slider.childNodes[4];
+                this.slider.removeChild(element);
             }, 500);
         }
     }
     
     infiniteNext = () => {
-        let slider = document.getElementById('slider');
         if (this.widthSlider === -1) {
             setTimeout(() => {
-                slider.removeAttribute('style');
+                this.slider.removeAttribute('style');
                 this.widthSlider = this.totalSlide -1;
-                this.newDeltaX = (slider.offsetWidth)*this.widthSlider;
-                slider.style.transform = `translateX(-${this.newDeltaX}px)`;
+                this.newDeltaX = (this.slider.offsetWidth)*this.widthSlider;
+                this.slider.style.transform = `translateX(-${this.newDeltaX}px)`;
             })
         }
     }
 
     addInfiniteEffect = (numberItem) => {
-        let slider = document.getElementById('slider');
-        let element:any = slider.childNodes[numberItem];
+        let element:any = this.slider.childNodes[numberItem];
+        let otro =  document.createElement("section");
+        otro.appendChild(element)
+
+        
+        let children = element.childNodes[0];
+        console.log('children', children)
+        let className = element.getAttribute('class');
+        console.log('=============>', element.getAttribute('class'));
+        let string = element.innerHTML;
+        console.log('innerHTML', element.innerHTML);
+
+
+        otro.className = className;
+
+
+        let foo = this.slider.childNodes[this.totalSlide - 1];
+
+        var parentDiv = element.parentNode;
+        this.slider.appendChild(otro);
+
+
         //falta ducplicar el elemento;
-        let elementDuplicate:any = document.createElement('div');
-        slider.appendChild(elementDuplicate);
+        console.log('element', element)
+        //this.slider.appendChild(element);
     }
 
     isSelectedDot = () => {
-        let dooot:any = ReactDOM.findDOMNode(this.refs.dots).childNodes[this.widthSlider];
+        if (this.props.dots) {
+            let dooot:any = ReactDOM.findDOMNode(this.refs.dots).childNodes[this.widthSlider];
+        }
         //dooot.style.background = 'red';
         //console.log('DOTS..', ReactDOM.findDOMNode(this.refs.dots).childNodes[this.widthSlider].style.brackground = 'red');
     }
@@ -136,65 +154,62 @@ export class ContainerSlider extends React.Component<Props, {}> {
 
     onClick=(e)=> {
         this.widthSlider = parseInt(e.target.getAttribute('data-key'));
-        let slider = document.getElementById('slider');
-        this.newDeltaX = (slider.offsetWidth)*this.widthSlider;
-        slider.style.transform = `translateX(-${this.newDeltaX}px)`;
-        slider.style.transition = 'all ease .5s';       
+        this.newDeltaX = (this.slider.offsetWidth)*this.widthSlider;
+        this.slider.style.transform = `translateX(-${this.newDeltaX}px)`;
+        this.slider.style.transition = 'all ease .5s';       
     }
 
     prevSlide = () => {
         console.log('ir al anterior', this.widthSlider);
         
-        let slider = document.getElementById('slider');
         if (this.props.infinite) {
             this.widthSlider-=1;
             this.slideInfinite();
-            this.newDeltaX = (slider.offsetWidth)*this.widthSlider;
-            slider.style.transform = `translateX(-${this.newDeltaX}px)`;
+            this.newDeltaX = (this.slider.offsetWidth)*this.widthSlider;
+            this.slider.style.transform = `translateX(-${this.newDeltaX}px)`;
         } else {
             this.widthSlider-=1;
             //validando para que no se siga deslizando
             if (this.widthSlider !== -1) {
-                this.newDeltaX = (slider.offsetWidth)*this.widthSlider;
-                slider.style.transform = `translateX(-${this.newDeltaX}px)`;
+                this.newDeltaX = (this.slider.offsetWidth)*this.widthSlider;
+                this.slider.style.transform = `translateX(-${this.newDeltaX}px)`;
             } else {
                 this.widthSlider= 0;
             }
         }
-        slider.style.transition = 'all ease .5s';
+        this.slider.style.transition = 'all ease .5s';
     }
 
     nextSlide = () => {
         console.log('ir al siguiente', this.widthSlider);
-        let slider = document.getElementById('slider');
 
         if (this.props.infinite) {
             this.widthSlider+=1;
             this.slideInfinite();
-            this.newDeltaX = (slider.offsetWidth)*this.widthSlider;
-            slider.style.transform = `translateX(-${this.newDeltaX}px)`;
+            this.newDeltaX = (this.slider.offsetWidth)*this.widthSlider;
+            this.slider.style.transform = `translateX(-${this.newDeltaX}px)`;
         } else {
             this.widthSlider+=1;
             //validando para que no se siga deslizando
             if (this.totalSlide !== this.widthSlider) {
-                this.newDeltaX = (slider.offsetWidth)*this.widthSlider;
-                slider.style.transform = `translateX(-${this.newDeltaX}px)`;
+                this.newDeltaX = (this.slider.offsetWidth)*this.widthSlider;
+            this.slider.style.transform = `translateX(-${this.newDeltaX}px)`;
             } else {
                 this.widthSlider= this.totalSlide-1;
             }
         }
-        slider.style.transition = 'all ease .5s';
+        this.slider.style.transition = 'all ease .5s';
     }
 
     componentDidMount() {
-        this.totalSlide = document.getElementById('slider').childNodes.length;
+        this.slider = ReactDOM.findDOMNode(this.refs.slider).childNodes[0];
+        this.totalSlide = this.slider.childNodes.length;
         window.addEventListener("resize", this.resetSlide);
     }
     
     resetSlide = () => {
-        let slider = document.getElementById('slider');
-        let width = (slider.offsetWidth)*this.widthSlider;
-        slider.style.transform = `translateX(-${width}px)`;
+        let width = (this.slider.offsetWidth)*this.widthSlider;
+        this.slider.style.transform = `translateX(-${width}px)`;
     }
 
     render(): JSX.Element {
@@ -205,7 +220,10 @@ export class ContainerSlider extends React.Component<Props, {}> {
                 onSwipingRight = {this.swipingRight}
                 onSwiped={this.swiped}
             >
-                {this.props.children}
+                <Wrapper ref="slider" >
+                    {this.props.children}
+                </Wrapper>
+                    
 
                 {this.props.dots &&
                     <Dots ref="dots">

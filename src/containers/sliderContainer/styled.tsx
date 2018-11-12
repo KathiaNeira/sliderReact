@@ -1,5 +1,10 @@
-import * as React from "react";
 import styled, { css } from "styled-components";
+
+export const Wrapper = styled.div`
+  width: 100%;
+  overflow: hidden;
+  
+`;
 
 export const Dots = styled.div`
   display: flex;

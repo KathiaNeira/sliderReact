@@ -1,6 +1,5 @@
 import * as React from "react";
 import styled, { css } from "styled-components";
-import * as PropTypes from "prop-types";
 
 const images = [
   'https://images.pexels.com/photos/356378/pexels-photo-356378.jpeg?auto=compress&cs=tinysrgb&h=650&w=940',
@@ -14,27 +13,7 @@ interface Slider {
   position?: any;
 }
 
-const Dots = styled.div`
-  display: flex;
-  justify-content: center;
-  span {
-    display: block;
-    cursor: pointer;
-    width: 12px;
-    height: 12px;
-    background-color: #c2c2c2;
-    border-radius: 50%;
-    margin: 0 5px;
-    &:hover {
-      background: red;
-    }
-  }
-`;
-const Wrapper = styled.div`
-  width: 100%;
-  overflow: hidden;
-  
-`;
+
 const SliderWrapper = styled.div`
   display: flex;
   div{
@@ -54,25 +33,15 @@ const SliderItem = styled.div`
   background: #c2c2c2;
 `;
 
-interface props {
-  handleRef?: any;
-}
-
-export const Slider = ({ handleRef }) => (
+export const Slider = () => (
   <React.Fragment>
-    <Wrapper>
-      <SliderWrapper id="slider" ref={ref => {
-          console.log("REFFFF..");
-          handleRef(ref);
-        }}
-      >
-        {images.map((link, index) => (
-          <SliderItem key={index} >
-            <img src={link} alt=""/>
-            <p>slider {index}</p>
-          </SliderItem>
-        ))}
-      </SliderWrapper>
-    </Wrapper>
+    <SliderWrapper id="slider" >
+      {images.map((link, index) => (
+        <SliderItem key={index} >
+          <img src={link} alt=""/>
+          <p>slider {index}</p>
+        </SliderItem>
+      ))}
+    </SliderWrapper>
   </React.Fragment>
 );
